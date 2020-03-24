@@ -15,6 +15,37 @@ resource "aws_security_group" "default" {
   tags        = "${module.default_label.tags}"
 }
 
+resource "aws_security_group_rule" "egress" {
+  type              = "egress"
+  from_port         = "0"
+  to_port           = "0"
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = "${aws_security_group.default.id}"
+}
+
+resource "aws_security_group_rule" "http_ingress" {
+  count             = "${var.http_enabled == "true" ? 1 : 0}"
+  type              = "ingress"
+  from_port         = "${var.http_port}"
+  to_port           = "${var.http_port}"
+  protocol          = "tcp"
+  cidr_blocks       = ["${var.http_ingress_cidr_blocks}"]
+  prefix_list_ids   = ["${var.http_ingress_prefix_list_ids}"]
+  security_group_id = "${aws_security_group.default.id}"
+}
+
+resource "aws_security_group_rule" "https_ingress" {
+  count             = "${var.https_enabled == "true" ? 1 : 0}"
+  type              = "ingress"
+  from_port         = "${var.https_port}"
+  to_port           = "${var.https_port}"
+  protocol          = "tcp"
+  cidr_blocks       = ["${var.https_ingress_cidr_blocks}"]
+  prefix_list_ids   = ["${var.https_ingress_prefix_list_ids}"]
+  security_group_id = "${aws_security_group.default.id}"
+}
+
 module "access_logs" {
   source        = "git::https://github.com/geneames/terraform-aws-lb-s3-bucket.git?ref=tags/0.11.14"
   attributes    = "${compact(concat(var.attributes, list("alb", "access", "logs")))}"

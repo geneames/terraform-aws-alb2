@@ -111,3 +111,51 @@ variable "alb_access_logs_s3_bucket_force_destroy" {
   description = "A boolean that indicates all objects should be deleted from the ALB access logs S3 bucket so that the bucket can be destroyed without error"
   default     = false
 }
+
+variable "http_port" {
+  type        = "string"
+  default     = "80"
+  description = "The port for the HTTP listener"
+}
+
+variable "http_enabled" {
+  type        = "string"
+  default     = "true"
+  description = "A boolean flag to enable/disable HTTP listener"
+}
+
+variable "http_ingress_cidr_blocks" {
+  type        = "list"
+  default     = ["0.0.0.0/0"]
+  description = "List of CIDR blocks to allow in HTTP security group"
+}
+
+variable "http_ingress_prefix_list_ids" {
+  type        = "list"
+  default     = []
+  description = "List of prefix list IDs for allowing access to HTTP ingress security group"
+}
+
+variable "https_port" {
+  type        = "string"
+  default     = "443"
+  description = "The port for the HTTPS listener"
+}
+
+variable "https_enabled" {
+  type        = "string"
+  default     = "false"
+  description = "A boolean flag to enable/disable HTTPS listener"
+}
+
+variable "https_ingress_cidr_blocks" {
+  type        = "list"
+  default     = ["0.0.0.0/0"]
+  description = "List of CIDR blocks to allow in HTTPS security group"
+}
+
+variable "https_ingress_prefix_list_ids" {
+  type        = "list"
+  default     = []
+  description = "List of prefix list IDs for allowing access to HTTPS ingress security group"
+}
