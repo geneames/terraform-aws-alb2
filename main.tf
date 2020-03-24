@@ -1,5 +1,5 @@
 module "default_label" {
-  source     = "git::https://github.com/cloudposse/terraform-terraform-label.git?ref=tags/0.2.1"
+  source     = "git::https://github.com/geneames/terraform-null-label.git?ref=tags/0.11.1"
   attributes = "${var.attributes}"
   delimiter  = "${var.delimiter}"
   name       = "${var.name}"
@@ -15,39 +15,8 @@ resource "aws_security_group" "default" {
   tags        = "${module.default_label.tags}"
 }
 
-resource "aws_security_group_rule" "egress" {
-  type              = "egress"
-  from_port         = "0"
-  to_port           = "0"
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = "${aws_security_group.default.id}"
-}
-
-resource "aws_security_group_rule" "http_ingress" {
-  count             = "${var.http_enabled == "true" ? 1 : 0}"
-  type              = "ingress"
-  from_port         = "${var.http_port}"
-  to_port           = "${var.http_port}"
-  protocol          = "tcp"
-  cidr_blocks       = ["${var.http_ingress_cidr_blocks}"]
-  prefix_list_ids   = ["${var.http_ingress_prefix_list_ids}"]
-  security_group_id = "${aws_security_group.default.id}"
-}
-
-resource "aws_security_group_rule" "https_ingress" {
-  count             = "${var.https_enabled == "true" ? 1 : 0}"
-  type              = "ingress"
-  from_port         = "${var.https_port}"
-  to_port           = "${var.https_port}"
-  protocol          = "tcp"
-  cidr_blocks       = ["${var.https_ingress_cidr_blocks}"]
-  prefix_list_ids   = ["${var.https_ingress_prefix_list_ids}"]
-  security_group_id = "${aws_security_group.default.id}"
-}
-
 module "access_logs" {
-  source        = "git::https://github.com/cloudposse/terraform-aws-lb-s3-bucket.git?ref=tags/0.1.4"
+  source        = "git::https://github.com/geneames/terraform-aws-lb-s3-bucket.git?ref=tags/0.11.14"
   attributes    = "${compact(concat(var.attributes, list("alb", "access", "logs")))}"
   delimiter     = "${var.delimiter}"
   name          = "${var.name}"
@@ -75,66 +44,5 @@ resource "aws_lb" "default" {
     bucket  = "${module.access_logs.bucket_id}"
     prefix  = "${var.access_logs_prefix}"
     enabled = "${var.access_logs_enabled}"
-  }
-}
-
-module "default_target_group_label" {
-  source     = "git::https://github.com/cloudposse/terraform-terraform-label.git?ref=tags/0.2.1"
-  attributes = "${concat(var.attributes, list("default"))}"
-  delimiter  = "${var.delimiter}"
-  name       = "${var.name}"
-  namespace  = "${var.namespace}"
-  stage      = "${var.stage}"
-  tags       = "${var.tags}"
-}
-
-resource "aws_lb_target_group" "default" {
-  name                 = "${var.target_group_name == "" ? module.default_target_group_label.id : var.target_group_name}"
-  port                 = "${var.target_group_port}"
-  protocol             = "HTTP"
-  vpc_id               = "${var.vpc_id}"
-  target_type          = "${var.target_group_target_type}"
-  deregistration_delay = "${var.deregistration_delay}"
-
-  health_check {
-    path                = "${var.health_check_path}"
-    timeout             = "${var.health_check_timeout}"
-    healthy_threshold   = "${var.health_check_healthy_threshold}"
-    unhealthy_threshold = "${var.health_check_unhealthy_threshold}"
-    interval            = "${var.health_check_interval}"
-    matcher             = "${var.health_check_matcher}"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = "${merge(module.default_target_group_label.tags, var.target_group_additional_tags)}"
-}
-
-resource "aws_lb_listener" "http" {
-  count             = "${var.http_enabled == "true" ? 1 : 0}"
-  load_balancer_arn = "${aws_lb.default.arn}"
-  port              = "${var.http_port}"
-  protocol          = "HTTP"
-
-  default_action {
-    target_group_arn = "${aws_lb_target_group.default.arn}"
-    type             = "forward"
-  }
-}
-
-resource "aws_lb_listener" "https" {
-  count             = "${var.https_enabled == "true" ? 1 : 0}"
-  load_balancer_arn = "${aws_lb.default.arn}"
-
-  port            = "${var.https_port}"
-  protocol        = "HTTPS"
-  ssl_policy      = "${var.https_ssl_policy}"
-  certificate_arn = "${var.certificate_arn}"
-
-  default_action {
-    target_group_arn = "${aws_lb_target_group.default.arn}"
-    type             = "forward"
   }
 }

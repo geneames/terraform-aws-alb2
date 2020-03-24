@@ -53,63 +53,10 @@ variable "internal" {
   description = "A boolean flag to determine whether the ALB should be internal"
 }
 
-variable "http_port" {
-  type        = "string"
-  default     = "80"
-  description = "The port for the HTTP listener"
-}
-
-variable "http_enabled" {
-  type        = "string"
-  default     = "true"
-  description = "A boolean flag to enable/disable HTTP listener"
-}
-
-variable "http_ingress_cidr_blocks" {
-  type        = "list"
-  default     = ["0.0.0.0/0"]
-  description = "List of CIDR blocks to allow in HTTP security group"
-}
-
-variable "http_ingress_prefix_list_ids" {
-  type        = "list"
-  default     = []
-  description = "List of prefix list IDs for allowing access to HTTP ingress security group"
-}
-
 variable "certificate_arn" {
   type        = "string"
   default     = ""
   description = "The ARN of the default SSL certificate for HTTPS listener"
-}
-
-variable "https_port" {
-  type        = "string"
-  default     = "443"
-  description = "The port for the HTTPS listener"
-}
-
-variable "https_enabled" {
-  type        = "string"
-  default     = "false"
-  description = "A boolean flag to enable/disable HTTPS listener"
-}
-
-variable "https_ingress_cidr_blocks" {
-  type        = "list"
-  default     = ["0.0.0.0/0"]
-  description = "List of CIDR blocks to allow in HTTPS security group"
-}
-
-variable "https_ingress_prefix_list_ids" {
-  type        = "list"
-  default     = []
-  description = "List of prefix list IDs for allowing access to HTTPS ingress security group"
-}
-
-variable "https_ssl_policy" {
-  description = "The name of the SSL Policy for the listener."
-  default     = "ELBSecurityPolicy-2015-05"
 }
 
 variable "access_logs_prefix" {
@@ -160,72 +107,7 @@ variable "deletion_protection_enabled" {
   description = "A boolean flag to enable/disable deletion protection for ALB"
 }
 
-variable "deregistration_delay" {
-  type        = "string"
-  default     = "15"
-  description = "The amount of time to wait in seconds before changing the state of a deregistering target to unused"
-}
-
-variable "health_check_path" {
-  type        = "string"
-  default     = "/"
-  description = "The destination for the health check request"
-}
-
-variable "health_check_timeout" {
-  type        = "string"
-  default     = "10"
-  description = "The amount of time to wait in seconds before failing a health check request"
-}
-
-variable "health_check_healthy_threshold" {
-  type        = "string"
-  default     = "2"
-  description = "The number of consecutive health checks successes required before considering an unhealthy target healthy"
-}
-
-variable "health_check_unhealthy_threshold" {
-  type        = "string"
-  default     = "2"
-  description = "The number of consecutive health check failures required before considering the target unhealthy"
-}
-
-variable "health_check_interval" {
-  type        = "string"
-  default     = "15"
-  description = "The duration in seconds in between health checks"
-}
-
-variable "health_check_matcher" {
-  type        = "string"
-  default     = "200-399"
-  description = "The HTTP response codes to indicate a healthy check"
-}
-
 variable "alb_access_logs_s3_bucket_force_destroy" {
   description = "A boolean that indicates all objects should be deleted from the ALB access logs S3 bucket so that the bucket can be destroyed without error"
   default     = false
-}
-
-variable "target_group_port" {
-  description = "The port for the default target group"
-  default     = "80"
-}
-
-variable "target_group_name" {
-  type        = "string"
-  default     = ""
-  description = "The name for the default target group, uses a module label name if left empty"
-}
-
-variable "target_group_target_type" {
-  type        = "string"
-  default     = "ip"
-  description = "The type (instance, ip or lambda) of targets that can be registered with the target group"
-}
-
-variable "target_group_additional_tags" {
-  type        = "map"
-  default     = {}
-  description = "The additional tags to apply to the target group"
 }

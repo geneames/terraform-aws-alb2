@@ -28,26 +28,6 @@ output "security_group_id" {
   value       = "${aws_security_group.default.id}"
 }
 
-output "default_target_group_arn" {
-  description = "The default target group ARN"
-  value       = "${aws_lb_target_group.default.arn}"
-}
-
-output "http_listener_arn" {
-  description = "The ARN of the HTTP listener"
-  value       = "${join("", aws_lb_listener.http.*.arn)}"
-}
-
-output "https_listener_arn" {
-  description = "The ARN of the HTTPS listener"
-  value       = "${join("", aws_lb_listener.https.*.arn)}"
-}
-
-output "listener_arns" {
-  description = "A list of all the listener ARNs"
-  value       = "${compact(concat(aws_lb_listener.http.*.arn, aws_lb_listener.https.*.arn))}"
-}
-
 output "access_logs_bucket_id" {
   description = "The S3 bucket ID for access logs"
   value       = "${module.access_logs.bucket_id}"
